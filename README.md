@@ -1,5 +1,4 @@
-# 脱衣ブロック崩し
-# 爆裂ブロック 重ね着バージョン
+# 脱衣ブロック崩し「爆裂ブロック」重ね着バージョン
 
 [![タイトル画像](img/title.jpg)](https://bakuretuken.github.io/bakuretu-block/)
 
