@@ -74,8 +74,11 @@ var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数
 var BLOCK_GAME_FPS = 24; // フレームレート
 var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
 var BLOCK_BAR_MARGIN_BOTTOM = 80; // 画面下からの反射パネルの高さ
-var BLOCK_GAME_BLOCK_SIZE = 32; // ブロックのサイズ（16 or 32）
+var BLOCK_GAME_BLOCK_SIZE = 32; // ブロック幅（16 or 32）
+var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
 ```
+
+透明部分がほとんどのブロック生成を避けるために、ブロック内のピクセルが BLOCK_GAME_MIN_BLOCK_PIXEL 以下の場合はブロック化しません。
 
 ## ゲームプログラムの改造
 
@@ -96,7 +99,7 @@ var BLOCK_GAME_BLOCK_SIZE = 32; // ブロックのサイズ（16 or 32）
 python -m http.server 8000
 
 # Node.jsの場合
-npx http-server
+npx http-server -p 8000
 
 # PHPの場合
 php -S localhost:8000
