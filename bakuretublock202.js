@@ -382,9 +382,19 @@ function haveBlock(ctx, x, y)
 
 function drawBackImage(x, y)
 {
-    sf.context.drawImage(imgBack, x*BLOCK_GAME_BLOCK_SIZE, y*BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, x*BLOCK_GAME_BLOCK_SIZE, y*BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
+    var ctx = sf.context;
+    var blockX = x * BLOCK_GAME_BLOCK_SIZE;
+    var blockY = y * BLOCK_GAME_BLOCK_SIZE;
+
+    // まず該当領域をクリア
+    ctx.clearRect(blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
+
+    // 背景画像を描画
+    ctx.drawImage(imgBack, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
+
     if (game.mode == 1) {
-        sf.context.drawImage(imgFront2, x*BLOCK_GAME_BLOCK_SIZE, y*BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, x*BLOCK_GAME_BLOCK_SIZE, y*BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
+        // imgFront2を描画
+        ctx.drawImage(imgFront2, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
     }
 };
 
@@ -459,6 +469,9 @@ function gameWin()
 
     // パネル非表示
     game.bar.y = -100;
+
+    // 残機ハートマーク非表示
+    game.lifeDisplay.y = -100;
 
     sf.context.drawImage(imgWin, 0, 0);
 };
