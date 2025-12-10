@@ -27,13 +27,13 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 
 | ファイル名                | 説明                       |
 |---------------------------|----------------------------|
-| bakuretublock200.js       | ゲーム本体                 |
-| bakuretublock201.min.js   | ゲーム本体(圧縮版)          |
+| bakuretublock202.js       | ゲーム本体                 |
 | enchant.min.js            | enchant.jsゲームエンジン   |
 | index.html                | ゲーム起動用HTML           |
 | block_icon_boll.png       | ボール画像（44x22）        |
 | block_icon_menu.png       | タイトル画像（512x256）    |
 | block_icon_panel.png      | 反射パネル画像（120x32）   |
+| block_icon_life.png      | ライフ表示画像（30x30）   |
 | block_image_back.jpg      | 背景画像（480x640）        |
 | block_image_front1.png     | ブロック画像1（480x640, 透明PNG）|
 | block_image_front2.png     | ブロック画像2（480x640, 透明PNG）|
@@ -70,6 +70,7 @@ var BLOCK_GAME_BLOCK_SIZE = 32;     // ブロックサイズ（16 or 32）
 ```js
 var BLOCK_GAME_WIDTH = 480; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
+var BLOCK_GAME_LIFE = 3; // ライフ数（画面左上に残りライフ数が表示されます）
 var BLOCK_GAME_FPS = 24; // フレームレート
 var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
 var BLOCK_BAR_MARGIN_BOTTOM = 80; // 画面下からの反射パネルの高さ
@@ -81,13 +82,12 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 ## ゲームプログラムの改造
 
-`index.html`の読み込みJSを`bakuretublock201.min.js`から下記に変更してください
+`index.html`で読み込んでいる JSプログラム `bakuretublock202.js`を改造してください
 
 ```
-<script src="bakuretublock201.js"></script>
+<script src="bakuretublock202.js"></script>
 ```
 
-`bakuretublock.js`を変更してください。<br />
 `enchant.js`というゲームエンジンを使用しています。
 
 手元のPCでWEBサーバを立ち上げるなどして、サーバ経由で動作確認を行ってください。<br />
