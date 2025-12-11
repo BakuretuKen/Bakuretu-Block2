@@ -1,8 +1,11 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver1.00
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver1.03
  * https://bakuretuken.com/block/
  */
 
+if (typeof BLOCK_GAME_SCREEN == 'undefined') {
+    var BLOCK_GAME_SCREEN = 1;
+}
 if (typeof BLOCK_GAME_LIFE == 'undefined') {
     var BLOCK_GAME_LIFE = 3;
 }
@@ -24,7 +27,10 @@ if (BLOCK_GAME_HEIGHT % BLOCK_GAME_BLOCK_SIZE != 0) {
 
 enchant();
 var game = new Game(BLOCK_GAME_WIDTH, BLOCK_GAME_HEIGHT);
-game.preload("block_image_front1.png", "block_image_front2.png", "block_image_back.jpg", "block_image_win.jpg", "block_icon_menu.png", "block_icon_boll.png", "block_icon_panel.png", "block_icon_life.png");
+game.preload("block_image_front1.png", "block_image_back.jpg", "block_image_win.jpg", "block_icon_menu.png", "block_icon_boll.png", "block_icon_panel.png", "block_icon_life.png");
+if (BLOCK_GAME_SCREEN == 2) {
+    game.preload("block_image_front2.png");
+}
 game.fps = BLOCK_GAME_FPS;
 game.mode = 0; // WAIT FIRST START
 game.lives = BLOCK_GAME_LIFE; // 残機数
@@ -291,7 +297,11 @@ window.onload = function()
     game.onload = function()
     {
     imgFront1 = game.assets["block_image_front1.png"]._element;
-    imgFront2 = game.assets["block_image_front2.png"]._element;
+    if (BLOCK_GAME_SCREEN == 2) {
+        imgFront2 = game.assets["block_image_front2.png"]._element;
+    } else {
+        imgFront2 = null;
+    }
     imgBack = game.assets["block_image_back.jpg"]._element;
     imgWin = game.assets["block_image_win.jpg"]._element;
 
@@ -363,7 +373,7 @@ function initGame(targetImage)
     // console.log("[BakuretuBlock] Init Block: "+blockBaseNum);
 
     sf.context.drawImage(imgBack, 0, 0);
-    if (targetImage == imgFront1) {
+    if (targetImage == imgFront1 && imgFront2 != null) {
         sf.context.drawImage(imgFront2, 0, 0);
     }
     sf.context.drawImage(targetImage, 0, 0);
@@ -392,7 +402,7 @@ function drawBackImage(x, y)
     // 背景画像を描画
     ctx.drawImage(imgBack, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
 
-    if (game.mode == 1) {
+    if (game.mode == 1 && imgFront2 != null) {
         // imgFront2を描画
         ctx.drawImage(imgFront2, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
     }
@@ -478,8 +488,12 @@ function gameWin()
 
 function gameNextStage()
 {
-    initGame(imgFront2);
-    game.mode = 2; // GAME NEXT STAGE
+    if (BLOCK_GAME_SCREEN == 2) {
+        initGame(imgFront2);
+        game.mode = 2; // GAME NEXT STAGE
+    } else {
+        gameWin(); // 次ステージなし(GAME WIN)
+    }
 };
 
 function gameRestart()
@@ -493,5 +507,5 @@ function gameRestart()
     game.lifeDisplay.updateDisplay();
 
     // gameStart();
-    game.mode = 0; // WAIT GAME
+    game.mode = 0; // GAME START WAIT
 };

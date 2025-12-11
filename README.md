@@ -27,7 +27,7 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 
 | ファイル名                | 説明                       |
 |---------------------------|----------------------------|
-| bakuretublock202.js       | ゲーム本体                 |
+| bakuretublock203.js       | ゲーム本体                 |
 | enchant.min.js            | enchant.jsゲームエンジン   |
 | index.html                | ゲーム起動用HTML           |
 | block_icon_boll.png       | ボール画像（44x22）        |
@@ -36,9 +36,15 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 | block_icon_life.png      | ライフ表示画像（30x30）   |
 | block_image_back.jpg      | 背景画像（480x640）        |
 | block_image_front1.png     | ブロック画像1（480x640, 透明PNG）|
-| block_image_front2.png     | ブロック画像2（480x640, 透明PNG）|
+| block_image_front2.png     | ブロック画像2（480x640, 透明PNG）(*1)|
 | block_image_win.jpg       | 勝利画像（480x640）        |
 | block_image.psd           | サンプルゲーム画像PSD            |
+
+| フォルダ名                | 説明                       |
+|---------------------------|----------------------------|
+| 1block_game フォルダ      | 1段階ゲーム（通常バージョン）                 |
+
+(*1) `BLOCK_GAME_SCREEN = 2` 2段階ゲーム（重ね着バージョン）の時のみ必要
 
 ## セットアップ・使い方
 
@@ -66,8 +72,11 @@ var BLOCK_GAME_BLOCK_SIZE = 32;     // ブロックサイズ（16 or 32）
 
 ## ゲームのカスタマイズ
 
-`index.html`で以下の変数を上書き可能
+### 重ね着バージョン（2段階ゲーム）
+
+`index.html`で以下の変数を設定してください
 ```js
+var BLOCK_GAME_SCREEN = 2; // ゲーム数（1 or 2）
 var BLOCK_GAME_WIDTH = 480; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_LIFE = 3; // ライフ数（画面左上に残りライフ数が表示されます）
@@ -81,12 +90,39 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 透明部分がほとんどのブロック生成を避けるために、ブロック内のピクセルが BLOCK_GAME_MIN_BLOCK_PIXEL 以下の場合はブロック化しません。<br />
 残りライフ数が左上にハートマークで表示されます。
 
+`BLOCK_GAME_SCREEN = 2` で、ブロックゲームが2段階（重ね着バージョン）になります。
+
+### 通常バージョン（1段階ゲーム）
+
+`index.html`で以下の変数を設定してください
+```js
+var BLOCK_GAME_SCREEN = 1; // ゲーム数（1 or 2）
+var BLOCK_GAME_WIDTH = 480; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
+var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
+var BLOCK_GAME_LIFE = 3; // ライフ数（画面左上に残りライフ数が表示されます）
+var BLOCK_GAME_FPS = 24; // フレームレート
+var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
+var BLOCK_BAR_MARGIN_BOTTOM = 80; // 画面下からの反射パネルの高さ
+var BLOCK_GAME_BLOCK_SIZE = 32; // ブロック幅（16 or 32）
+var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
+```
+
+`BLOCK_GAME_SCREEN = 1` で、ブロックゲームが1段階（通常バージョン）になります。<br />
+通常バージョンでは「ブロック画像2（block_image_front2.png）」のPNGファイルは不要です。
+
+![通常バージョン](img/block1_flow.jpg)
+
+↓画像クリックでゲーム開始
+
+[![ゲーム開始画像](img/game04.png)](https://bakuretuken.github.io/bakuretu-block/)
+
+
 ## ゲームプログラムの改造
 
-`index.html`で読み込んでいる JSプログラム `bakuretublock202.js`を改造してください
+`index.html`で読み込んでいる JSプログラム `bakuretublock203.js`を改造してください
 
 ```
-<script src="bakuretublock202.js"></script>
+<script src="bakuretublock203.js"></script>
 ```
 
 `enchant.js`というゲームエンジンを使用しています。
