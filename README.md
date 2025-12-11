@@ -94,6 +94,8 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 ### 通常バージョン（1段階ゲーム）
 
+![通常バージョン](img/block1_flow.jpg)
+
 `index.html`で以下の変数を設定してください
 ```js
 var BLOCK_GAME_SCREEN = 1; // ゲーム数（1 or 2）
@@ -109,8 +111,6 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 `BLOCK_GAME_SCREEN = 1` で、ブロックゲームが1段階（通常バージョン）になります。<br />
 通常バージョンでは「ブロック画像2（block_image_front2.png）」のPNGファイルは不要です。
-
-![通常バージョン](img/block1_flow.jpg)
 
 ↓画像クリックでゲーム開始
 
@@ -149,7 +149,8 @@ php -S localhost:8000
 ## 関連リンク
 
 - [解説WEBページ](https://bakuretuken.com/block/)
-- [サンプルゲーム](https://bakuretuken.github.io/bakuretu-block2/)
+- [2段階サンプルゲーム](https://bakuretuken.github.io/bakuretu-block2/)
+- [1段階サンプルゲーム](https://bakuretuken.github.io/bakuretu-block/)
 
 ## ライセンス
 
