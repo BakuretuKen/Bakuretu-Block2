@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver1.03
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver1.03b
  * https://bakuretuken.com/block/
  */
 
@@ -97,11 +97,11 @@ SpriteScreen = Class.create(Sprite,
         var posDiff = e.x - touchPos;
         touchPos = e.x;
         game.bar.x = game.bar.x + posDiff;
-        if (game.bar.x < 0) game.bar.x = 0;
-        if (game.bar.x > BLOCK_GAME_WIDTH - 120) game.bar.x = BLOCK_GAME_WIDTH - 120;
+        // 反射板の移動範囲を制限
+        if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
+        if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
+
         if (game.mode == 0 || game.mode == 11) { game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10; }
-        // game.bar.x = e.x - (game.bar.width / 2);
-        // if (game.mode == 0) { game.bomb.ox = e.x; game.bomb.x = game.bomb.ox -10; }
     }
 });
 
@@ -320,8 +320,9 @@ window.onload = function()
         var debug = e.pageX - this.getBoundingClientRect().left - (game.bar.width / 2);
         game.bar.x = e.pageX - this.getBoundingClientRect().left - (game.bar.width / 2);
 
-        if (game.bar.x < 0) game.bar.x = 0;
-        if (game.bar.x > BLOCK_GAME_WIDTH - 120) game.bar.x = BLOCK_GAME_WIDTH - 120;
+        // 反射板の移動範囲を制限
+        if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
+        if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
 
         if (game.mode == 0 || game.mode == 11) { game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10; }
     }, false);
