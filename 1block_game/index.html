@@ -2,34 +2,34 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>JavaScript版「爆裂ブロック崩し」通常版</title>
-<script src="enchant.min.js"></script>
+<title>JavaScript版「爆裂ブロック崩し」重ね着バージョン</title>
 <meta name="viewport" content="width=device-width">
+<script src="enchant.min.js"></script>
+</head>
 <body style="margin:0px; padding: 0px; background-color: #ccc; overscroll-behavior-y: none;">
 
 <script>
 var BLOCK_GAME_SCREEN = 1; // ゲーム数（1 or 2）
 var BLOCK_GAME_WIDTH = 480; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
-var BLOCK_GAME_HEIGHT = 672; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
+var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_LIFE = 3; // ライフ数
 var BLOCK_GAME_FPS = 24; // フレームレート
 var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
-var BLOCK_BAR_MARGIN_BOTTOM = 40; // 画面下からの反射パネルの高さ
-var BLOCK_GAME_BLOCK_SIZE = 32; // ブロックのサイズ（16 or 32）
+var BLOCK_BAR_MARGIN_BOTTOM = 50; // 画面下からの反射パネルの高さ
+var BLOCK_GAME_BLOCK_SIZE = 32; // ブロック幅（16 or 32）
 var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
 </script>
-
 
 <div style="display: grid; place-items: center; height: 100vh;">
 <script type="text/javascript" charset="utf-8">
 var userAgent = navigator.userAgent.toLowerCase();
 if(userAgent.indexOf("iphone") == -1 && userAgent.indexOf("android") == -1) {
-    document.write('<div id="enchant-stage" style="width:480px; height:672px; cursor:hand; margin: 0 auto;"></div>');
+    document.write('<div id="enchant-stage" style="width:'+BLOCK_GAME_WIDTH+'px; height:'+BLOCK_GAME_HEIGHT+'px; cursor:hand; margin: 0 auto;"></div>');
 }
 </script>
 </div>
 
-<script src="bakuretublock203.js"></script>
+<script src="bakuretublock205.js"></script>
 
 </body>
 </html>

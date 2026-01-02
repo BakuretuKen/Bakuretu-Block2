@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver1.03b
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05
  * https://bakuretuken.com/block/
  */
 
@@ -205,8 +205,8 @@ Bomb = Class.create(Sprite,
         var posY = parseInt(this.oy / BLOCK_GAME_BLOCK_SIZE);
 
         if (posX >= 0 && posX < maxX && posY >= 0 && posY < maxY) {
-            if (blockBase[posX][posY]) {
-                blockBase[posX][posY] = false;
+            if (blockBase[posX][posY] === 1) {
+                blockBase[posX][posY] = 0;
                 blockBaseNum--;
                 // console.log("[BakuretuBlock] Block: "+blockBaseNum);
                 drawBackImage(posX, posY);
@@ -217,6 +217,11 @@ Bomb = Class.create(Sprite,
                     rtnFlag = false;
                 }
             }
+            // ブロック化しないが画素がある場合、ブロック画像を削除
+            if (blockBase[posX][posY] === 2) {
+                blockBase[posX][posY] = 0;
+                drawBackImage(posX, posY);
+            }
         }
 
         // Y方向のブロック衝突判定
@@ -224,8 +229,8 @@ Bomb = Class.create(Sprite,
         posY = parseInt((this.oy + this.vy) / BLOCK_GAME_BLOCK_SIZE);
 
         if (posX >= 0 && posX < maxX && posY >= 0 && posY < maxY) {
-            if (blockBase[posX][posY]) {
-                blockBase[posX][posY] = false;
+            if (blockBase[posX][posY] === 1) {
+                blockBase[posX][posY] = 0;
                 blockBaseNum--;
                 // console.log("[BakuretuBlock] Block: "+blockBaseNum);
                 drawBackImage(posX, posY);
@@ -235,6 +240,11 @@ Bomb = Class.create(Sprite,
                     this.vy = -this.vy;
                     rtnFlag = false;
                 }
+            }
+            // ブロック化しないが画素がある場合、ブロック画像を削除
+            if (blockBase[posX][posY] === 2) {
+                blockBase[posX][posY] = 0;
+                drawBackImage(posX, posY);
             }
         }
 
@@ -360,13 +370,16 @@ function initGame(targetImage)
     blockBaseNumMaster = 0;
     for (var y = 0; y < BLOCK_GAME_HEIGHT / BLOCK_GAME_BLOCK_SIZE; y++) {
         for (var x = 0; x < BLOCK_GAME_WIDTH / BLOCK_GAME_BLOCK_SIZE; x++) {
-            blockBase[x][y] = false;
-            blockBaseMaster[x][y] = false;
+            blockBase[x][y] = 0;
+            blockBaseMaster[x][y] = 0;
             if (haveBlock(sf.context, x, y)) {
-                blockBase[x][y] = true;
-                blockBaseMaster[x][y] = true;
-                blockBaseNum++;
-                blockBaseNumMaster++;
+                var blockFlag = haveBlock(sf.context, x, y);
+                blockBase[x][y] = blockFlag;
+                blockBaseMaster[x][y] = blockFlag;
+                if (blockFlag == 1) {
+                    blockBaseNum++;
+                    blockBaseNumMaster++;
+                }
             }
         }
     }
@@ -388,7 +401,13 @@ function haveBlock(ctx, x, y)
     for (i = 0; i < BLOCK_GAME_BLOCK_SIZE*BLOCK_GAME_BLOCK_SIZE; i++) {
       if (imageData.data[i*4+3]) num++;
     }
-    return (num >= BLOCK_GAME_MIN_BLOCK_PIXEL) ? true : false;
+    if (num >= BLOCK_GAME_MIN_BLOCK_PIXEL) {
+        return 1; // ブロック化
+    }
+    if (num > 0) {
+        return 2; // ブロック化しないが画素がある
+    }
+    return 0; // ブロック化しない
 };
 
 function drawBackImage(x, y)
@@ -407,6 +426,9 @@ function drawBackImage(x, y)
         // imgFront2を描画
         ctx.drawImage(imgFront2, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
     }
+
+    // Surface の変更を強制的に Sprite に通知
+    game.spriteScreen.image = sf;
 };
 
 function gameStart()
