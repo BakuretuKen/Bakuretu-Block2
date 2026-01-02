@@ -27,7 +27,7 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 
 | ファイル名                | 説明                       |
 |---------------------------|----------------------------|
-| bakuretublock203.js       | ゲーム本体                 |
+| bakuretublock205.js       | ゲーム本体 v2.05            |
 | enchant.min.js            | enchant.jsゲームエンジン   |
 | index.html                | ゲーム起動用HTML           |
 | block_icon_boll.png       | ボール画像（44x22）        |
@@ -94,6 +94,8 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 ### 通常バージョン（1段階ゲーム）
 
+`1block_game`フォルダに通常バージョンのゲームがあります。
+
 ![通常バージョン](img/block1_flow.jpg)
 
 `index.html`で以下の変数を設定してください
@@ -119,7 +121,7 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 ## ゲームプログラムの改造
 
-`index.html`で読み込んでいる JSプログラム `bakuretublock203.js`を改造してください
+`index.html`で読み込んでいる JSプログラム `bakuretublock205.js`を改造してください
 
 ```
 <script src="bakuretublock203.js"></script>
