@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05a
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05b
  * https://bakuretuken.com/block/
  */
 
@@ -391,6 +391,7 @@ function initGame(targetImage)
     sf.context.drawImage(targetImage, 0, 0);
 
     // Surface の変更を強制的に Sprite に通知（キャッシュ回避）
+    sf._dirty = true;
     game.spriteScreen.image = null;
     game.spriteScreen.image = sf;
 };
@@ -429,6 +430,7 @@ function drawBackImage(x, y)
     }
 
     // Surface の変更を強制的に Sprite に通知（キャッシュ回避）
+    sf._dirty = true;
     game.spriteScreen.image = null;
     game.spriteScreen.image = sf;
 };
