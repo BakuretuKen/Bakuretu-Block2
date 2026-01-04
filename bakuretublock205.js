@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05a
  * https://bakuretuken.com/block/
  */
 
@@ -346,8 +346,6 @@ window.onload = function()
 
     initGame(imgFront1);
 
-    game.spriteScreen.image = sf;
-
     // 初回シーン実行
     scene.addChild(game.spriteScreen);
     scene.addChild(game.restart);
@@ -391,7 +389,10 @@ function initGame(targetImage)
         sf.context.drawImage(imgFront2, 0, 0);
     }
     sf.context.drawImage(targetImage, 0, 0);
-//    game.spriteScreen.image = sf;
+
+    // Surface の変更を強制的に Sprite に通知（キャッシュ回避）
+    game.spriteScreen.image = null;
+    game.spriteScreen.image = sf;
 };
 
 function haveBlock(ctx, x, y)
@@ -427,7 +428,8 @@ function drawBackImage(x, y)
         ctx.drawImage(imgFront2, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
     }
 
-    // Surface の変更を強制的に Sprite に通知
+    // Surface の変更を強制的に Sprite に通知（キャッシュ回避）
+    game.spriteScreen.image = null;
     game.spriteScreen.image = sf;
 };
 
