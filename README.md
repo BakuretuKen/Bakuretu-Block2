@@ -27,7 +27,7 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 
 | ファイル名                | 説明                       |
 |---------------------------|----------------------------|
-| bakuretublock205.js       | ゲーム本体 v2.05b           |
+| bakuretublock206.js       | ゲーム本体 v2.06           |
 | enchant.min.js            | enchant.jsゲームエンジン   |
 | index.html                | ゲーム起動用HTML           |
 | block_icon_boll.png       | ボール画像（44x22）        |
@@ -121,10 +121,10 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 ## ゲームプログラムの改造
 
-`index.html`で読み込んでいる JSプログラム `bakuretublock205.js`を改造してください
+`index.html`で読み込んでいる JSプログラム `bakuretublock206.js`を改造してください
 
 ```
-<script src="bakuretublock205.js"></script>
+<script src="bakuretublock206.js"></script>
 ```
 
 `enchant.js`というゲームエンジンを使用しています。
@@ -140,8 +140,20 @@ python -m http.server 8000
 npx http-server -p 8000
 
 # PHPの場合
-php -S localhost:8000
+php -S localhost:8000game.mode
 ```
+
+ゲーム状態（game.mode）
+
+| 値 | 説明 |
+|-----|-----|
+| 0 | 初期状態。ゲーム開始待ち |
+| 1 | ゲーム1プレイ中。通常バージョンのゲーム |
+| 2 | ゲーム2プレイ中。重ね着バージョンのゲーム |
+| 9 | 敗北。ゲームが敗北した状態 |
+| 10 | 勝利。ゲームが勝利した状態 |
+| 11 | ゲーム1継続待ち。ゲーム1が終了して継続待ちの状態 |
+| 12 | ゲーム2継続待ち。ゲーム2が終了して継続待ちの状態 |
 
 ## 注意事項
 

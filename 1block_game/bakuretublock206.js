@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.05b
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.06
  * https://bakuretuken.com/block/
  */
 
@@ -70,8 +70,8 @@ StartLabelSprite = Class.create(Sprite,
     ontouchstart:function(e)
     {
         if (game.mode == 0) gameStart();
-        if (game.mode == 9 || game.mode == 10) gameRestart();
-        if (game.mode == 11) gameContinue(); // 残機がある場合の継続
+        if (game.mode == 9) gameRestart();
+        if (game.mode == 11 || game.mode == 12) gameContinue(); // 残機がある場合の継続
     }
 });
 
@@ -101,7 +101,9 @@ SpriteScreen = Class.create(Sprite,
         if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
         if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
 
-        if (game.mode == 0 || game.mode == 11) { game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10; }
+        if (game.mode == 0 || game.mode == 11 || game.mode == 12) {
+            game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10;
+        }
     }
 });
 
@@ -334,14 +336,16 @@ window.onload = function()
         if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
         if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
 
-        if (game.mode == 0 || game.mode == 11) { game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10; }
+        if (game.mode == 0 || game.mode == 11 || game.mode == 12) {
+            game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10;
+        }
     }, false);
     document.getElementById("enchant-stage").addEventListener("click", function(e)
     {
         if (e.pageY < 150) return;
         if (game.mode == 0) gameStart();
         if (game.mode == 9) gameRestart();
-        if (game.mode == 11) gameContinue(); // 残機がある場合の継続
+        if (game.mode == 11 || game.mode == 12) gameContinue(); // 残機がある場合の継続
     }, false);
 
     initGame(imgFront1);
@@ -361,6 +365,7 @@ window.onload = function()
 
 function initGame(targetImage)
 {
+    // Surface は再作成せず、既存のものを再利用（キャッシュ問題を回避）
     sf.context.clearRect(0, 0, sf.width, sf.height);
     sf.context.drawImage(targetImage, 0, 0);
 
@@ -450,7 +455,12 @@ function gameContinue()
     // ボールに移動量
     game.bomb.vy = BLOCK_GAME_BALL_SPEED;
     game.bomb.vx = BLOCK_GAME_BALL_SPEED;
-    game.mode = 1; // GAME NOW
+    if (game.mode === 11) {
+        game.mode = 1; // GAME1 NOW
+    }
+    if (game.mode === 12) {
+        game.mode = 2; // GAME2 NOW
+    }
 };
 
 function loseLife()
@@ -473,7 +483,12 @@ function loseLife()
         game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
         game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
         game.restart.frame = 2; // 3フレーム目の「START」画像
-        game.mode = 11; // GAME CONTINUE（継続待ち）
+        if (game.mode === 1) {
+            game.mode = 11; // GAME1 CONTINUE（継続待ち）
+        }
+        if (game.mode === 2) {
+            game.mode = 12; // GAME2 CONTINUE（継続待ち）
+        }
     }
 };
 
