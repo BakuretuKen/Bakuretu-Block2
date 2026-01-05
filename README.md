@@ -143,7 +143,7 @@ python -m http.server 8000
 npx http-server -p 8000
 
 # PHPの場合
-php -S localhost:8000game.mode
+php -S localhost:8000
 ```
 
 **ゲーム状態（game.mode）**
