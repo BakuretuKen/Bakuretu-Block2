@@ -132,7 +132,9 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 `enchant.js`というゲームエンジンを使用しています。
 
-手元のPCでWEBサーバを立ち上げるなどして、サーバ経由で動作確認を行ってください。<br />
+ゲームを実行するにはWEBサーバ経由で実行する必要があります。<br />
+ホームページを公開している場合は、ホームページ経由でゲームを実行してください。<br />
+手元のPCでWEBサーバを立ち上げるなどして、サーバ経由で動作確認も可能です。<br />
 ローカルでWEBサーバ起動可能な開発プログラム言語もあります。
 
 ```bash
@@ -146,7 +148,7 @@ npx http-server -p 8000
 php -S localhost:8000
 ```
 
-**ゲーム状態（game.mode）**
+### ゲーム状態（game.mode）
 
 | 値 | 説明 |
 |-----|-----|
@@ -165,6 +167,33 @@ php -S localhost:8000
     - 0 → 1 → 11 → 1 → 2 → 12 → 2 → 9 or 10
 - 通常バージョン（1段階ゲーム）の遷移パターン例
     - 0 → 1 → 11 → 1 → 9 or 10
+
+### 変更例
+
+「重ね着バージョン」では、ゲーム1がクリアしたらゲーム2が連続で始まるようになっています。<br />
+これを変更して、ゲーム1がクリアしたらゲーム2が始まる前に、スタートボタンを出す場合は **gameNextStage 関数**を以下のように変更してください。
+
+![ゲーム2開始前開始画面](img/block2_flow_custom.jpg)
+
+```js
+function gameNextStage()
+{
+    if (BLOCK_GAME_SCREEN == 2) {
+        initGame(imgFront2);
+        game.bomb.init(); // ボールをリセット
+        // 反射板にボールを追従させる
+        game.bomb.ox = game.bar.x + (120 / 2);
+        game.bomb.x = game.bomb.ox -10;
+        // 「START」表示
+        game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
+        game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
+        game.restart.frame = 2; // 「START」画像
+        game.mode = 12; // GAME NEXT STAGE WAIT
+    } else {
+        gameWin(); // 次ステージなし(GAME WIN)
+    }
+};
+```
 
 ## 注意事項
 
