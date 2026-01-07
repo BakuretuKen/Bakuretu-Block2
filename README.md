@@ -27,7 +27,7 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 
 | ファイル名                | 説明                       |
 |---------------------------|----------------------------|
-| bakuretublock206.js       | ゲーム本体 v2.06           |
+| bakuretublock206.js       | ゲーム本体 v2.06a           |
 | enchant.min.js            | enchant.jsゲームエンジン   |
 | index.html                | ゲーム起動用HTML           |
 | block_icon_boll.png       | ボール画像（44x22）        |
@@ -49,7 +49,7 @@ PC、スマートフォンの両方でゲームが遊べます。<br />
 ## セットアップ・使い方
 
 1. ファイル一式をWebサーバーにアップロード
-2. `index.html`をブラウザで開く
+2. `index.html`をブラウザで開く<br />
    ※ローカルPCでは画像読み込み制限で動作しないので、WEBサーバー上で動作確認してください（WEBサーバ経由で動作させてください）
 3. 画像を差し替える場合は、同じファイル名・サイズで用意
 
@@ -70,9 +70,9 @@ var BLOCK_GAME_BLOCK_SIZE = 32;     // ブロックサイズ（16 or 32）
 
 ![](img/psd_layer.jpg)
 
-## ゲームのカスタマイズ
+# ゲームのカスタマイズ
 
-### 重ね着バージョン（2段階ゲーム）
+## 重ね着バージョン（2段階ゲーム）
 
 `index.html`で以下の変数を設定してください
 ```js
@@ -85,12 +85,26 @@ var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
 var BLOCK_BAR_MARGIN_BOTTOM = 80; // 画面下からの反射パネルの高さ
 var BLOCK_GAME_BLOCK_SIZE = 32; // ブロック幅（16 or 32）
 var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
+var BLOCK_NEXT_STAGE_START_SCREEN = 0; // ゲーム2開始時にSTART画面表示するかどうか（0:表示しない, 1:表示する）
 ```
 
-透明部分がほとんどのブロック生成を避けるために、ブロック内のピクセルが BLOCK_GAME_MIN_BLOCK_PIXEL 以下の場合はブロック化しません。<br />
+透明部分がほとんどのブロック生成を避けるために、ブロック内のピクセルが `BLOCK_GAME_MIN_BLOCK_PIXEL` 以下の場合はブロック化しません。<br />
 残りライフ数が左上にハートマークで表示されます。
 
 `BLOCK_GAME_SCREEN = 2` で、ブロックゲームが2段階（重ね着バージョン）になります。
+
+```js
+var BLOCK_GAME_SCREEN = 2;
+```
+
+「重ね着バージョン」では、「ゲーム1」がクリアしたら「ゲーム2」が連続で始まるようになっています。<br />
+ゲーム1がクリアしたらゲーム2が始まる前に、スタート画面を表示する場合は `BLOCK_NEXT_STAGE_START_SCREEN = 1` にしてください（v2.06a以降）。
+
+```js
+var BLOCK_NEXT_STAGE_START_SCREEN = 1;
+```
+
+![ゲーム2開始前開始画面](img/block2_flow_custom.jpg)
 
 ------------------------------------------------------------
 
@@ -115,6 +129,10 @@ var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（
 
 `BLOCK_GAME_SCREEN = 1` で、ブロックゲームが1段階（通常バージョン）になります。<br />
 通常バージョンでは「ブロック画像2（block_image_front2.png）」のPNGファイルは不要です。
+
+```js
+var BLOCK_GAME_SCREEN = 1;
+```
 
 ↓画像クリックでゲーム開始
 
@@ -165,35 +183,11 @@ php -S localhost:8000
 - 重ね着バージョン（2段階ゲーム）の遷移パターン例
     - 0 → 1 → 11 → 1 → 9
     - 0 → 1 → 11 → 1 → 2 → 12 → 2 → 9 or 10
+- 重ね着バージョン（2段階ゲーム）の遷移パターン例（ゲーム2開始前にSTART画面を表示）
+    - 0 → 1 → 11 → 1 → 12 → 2 → 12 → 2 → 9 or 10
+
 - 通常バージョン（1段階ゲーム）の遷移パターン例
     - 0 → 1 → 11 → 1 → 9 or 10
-
-### 変更例
-
-「重ね着バージョン」では、ゲーム1がクリアしたらゲーム2が連続で始まるようになっています。<br />
-これを変更して、ゲーム1がクリアしたらゲーム2が始まる前に、スタートボタンを出す場合は **gameNextStage 関数**を以下のように変更してください。
-
-![ゲーム2開始前開始画面](img/block2_flow_custom.jpg)
-
-```js
-function gameNextStage()
-{
-    if (BLOCK_GAME_SCREEN == 2) {
-        initGame(imgFront2);
-        game.bomb.init(); // ボールをリセット
-        // 反射板にボールを追従させる
-        game.bomb.ox = game.bar.x + (120 / 2);
-        game.bomb.x = game.bomb.ox -10;
-        // 「START」表示
-        game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
-        game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
-        game.restart.frame = 2; // 「START」画像
-        game.mode = 12; // GAME NEXT STAGE WAIT
-    } else {
-        gameWin(); // 次ステージなし(GAME WIN)
-    }
-};
-```
 
 ## 注意事項
 

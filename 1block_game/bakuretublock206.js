@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.06
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.06a
  * https://bakuretuken.com/block/
  */
 
@@ -9,6 +9,11 @@ if (typeof BLOCK_GAME_SCREEN == 'undefined') {
 if (typeof BLOCK_GAME_LIFE == 'undefined') {
     var BLOCK_GAME_LIFE = 3;
 }
+// 次ステージ開始時にSTART画面表示するかどうか（0: 表示しない, 1: 表示する）
+if (typeof BLOCK_NEXT_STAGE_START_SCREEN == 'undefined') {
+    var BLOCK_NEXT_STAGE_START_SCREEN = 0;
+}
+
 if (typeof BLOCK_GAME_MIN_BLOCK_PIXEL == 'undefined') {
     if (BLOCK_GAME_BLOCK_SIZE == 32) {
         var BLOCK_GAME_MIN_BLOCK_PIXEL = 24;
@@ -532,7 +537,20 @@ function gameNextStage()
 {
     if (BLOCK_GAME_SCREEN == 2) {
         initGame(imgFront2);
-        game.mode = 2; // GAME NEXT STAGE
+        // 次ステージ開始時にSTART画面表示する場合
+        if (BLOCK_NEXT_STAGE_START_SCREEN == 1) {
+            game.bomb.init(); // ボールをリセット
+            // 反射板にボールを追従させる
+            game.bomb.ox = game.bar.x + (120 / 2);
+            game.bomb.x = game.bomb.ox -10;
+            // 「START」表示
+            game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
+            game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
+            game.restart.frame = 2; // 「START」画像
+            game.mode = 12; // GAME NEXT STAGE WAIT
+        } else {
+            game.mode = 2; // GAME NEXT STAGE
+        }
     } else {
         gameWin(); // 次ステージなし(GAME WIN)
     }
