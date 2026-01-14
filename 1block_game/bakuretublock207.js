@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.06a
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.07
  * https://bakuretuken.com/block/
  */
 
@@ -21,6 +21,23 @@ if (typeof BLOCK_GAME_MIN_BLOCK_PIXEL == 'undefined') {
         var BLOCK_GAME_MIN_BLOCK_PIXEL = 6;
     }
 }
+// アニメーション設定
+if (typeof BLOCK_GAME_ANIME_IMAGE == 'undefined') {
+    var BLOCK_GAME_ANIME_IMAGE = 0; // アニメーション画像数（0以外でアニメーション有効）
+}
+if (typeof BLOCK_GAME_ANIME_WAIT == 'undefined') {
+    var BLOCK_GAME_ANIME_WAIT = 80; // アニメーション待ち時間
+}
+if (typeof BLOCK_GAME_ANIME_FRAME == 'undefined') {
+    var BLOCK_GAME_ANIME_FRAME = 1; // アニメーションフレーム間隔（アニメ速度）
+}
+if (typeof BLOCK_GAME_ANIME_POSITION_X == 'undefined') {
+    var BLOCK_GAME_ANIME_POSITION_X = 0; // アニメーション位置X
+}
+if (typeof BLOCK_GAME_ANIME_POSITION_Y == 'undefined') {
+    var BLOCK_GAME_ANIME_POSITION_Y = 0; // アニメーション位置Y
+}
+
 // console.log("BLOCK_GAME_MIN_BLOCK_PIXEL: "+BLOCK_GAME_MIN_BLOCK_PIXEL);
 
 if (BLOCK_GAME_WIDTH % BLOCK_GAME_BLOCK_SIZE != 0) {
@@ -36,6 +53,10 @@ game.preload("block_image_front1.png", "block_image_back.jpg", "block_image_win.
 if (BLOCK_GAME_SCREEN == 2) {
     game.preload("block_image_front2.png");
 }
+if (BLOCK_GAME_ANIME_IMAGE > 0) {
+    game.preload("block_image_anime.jpg");
+}
+
 game.fps = BLOCK_GAME_FPS;
 game.mode = 0; // WAIT FIRST START
 game.lives = BLOCK_GAME_LIFE; // 残機数
@@ -77,6 +98,51 @@ StartLabelSprite = Class.create(Sprite,
         if (game.mode == 0) gameStart();
         if (game.mode == 9) gameRestart();
         if (game.mode == 11 || game.mode == 12) gameContinue(); // 残機がある場合の継続
+    }
+});
+
+// --- アニメーション Sprite
+AnimeSprite = Class.create(Sprite,
+{
+    initialize:function()
+    {
+        var animeImg = game.assets["block_image_anime.jpg"];
+        animeWidth = animeImg.width;
+        animeHeight = animeImg.height;
+        Sprite.call(this, animeWidth, animeHeight / BLOCK_GAME_ANIME_IMAGE);
+        this.image = animeImg;
+        this.init();
+    },
+    init:function()
+    {
+        this.frame = 0;
+        this.x = BLOCK_GAME_ANIME_POSITION_X;
+        this.y = -BLOCK_GAME_HEIGHT; // 非表示
+        this.time = 0;
+    },
+    onenterframe:function()
+    {
+        // ゲーム勝利時はアニメーションを停止
+        if (game.mode == 10) {
+            this.y = -BLOCK_GAME_HEIGHT; // 非表示
+            return;
+        }
+
+        this.time++;
+        if (this.time < BLOCK_GAME_ANIME_WAIT) {
+            return;
+        }
+
+        this.y = BLOCK_GAME_ANIME_POSITION_Y; // 表示
+        for (var i = 0; i < BLOCK_GAME_ANIME_IMAGE; i++) {
+            if (this.time == BLOCK_GAME_ANIME_WAIT + (i * BLOCK_GAME_ANIME_FRAME)) {
+                this.frame = i;
+            }
+        }
+        if (this.time >= BLOCK_GAME_ANIME_WAIT + (BLOCK_GAME_ANIME_IMAGE * BLOCK_GAME_ANIME_FRAME)) {
+            this.time = 0;
+            this.y = -BLOCK_GAME_HEIGHT; // 非表示
+        }
     }
 });
 
@@ -328,6 +394,9 @@ window.onload = function()
     game.bomb = new Bomb();
     game.bar = new PanelBar();
     game.lifeDisplay = new LifeDisplay();
+    if (BLOCK_GAME_ANIME_IMAGE > 0) {
+        game.anime = new AnimeSprite();
+    }
     game.spriteScreen = new SpriteScreen();
 
     // for PC Mouse
@@ -357,6 +426,9 @@ window.onload = function()
 
     // 初回シーン実行
     scene.addChild(game.spriteScreen);
+    if (BLOCK_GAME_ANIME_IMAGE > 0) {
+        scene.addChild(game.anime);
+    }
     scene.addChild(game.restart);
     scene.addChild(game.bar);
     scene.addChild(game.bomb);
@@ -523,6 +595,10 @@ function gameWin()
     game.bomb.vx = 0;
     game.bomb.oy = -100;
     game.bomb.y = -100;
+    // アニメ非表示
+    if (BLOCK_GAME_ANIME_IMAGE > 0) {
+        game.anime.y = -BLOCK_GAME_HEIGHT;
+    }
 
     // パネル非表示
     game.bar.y = -100;
