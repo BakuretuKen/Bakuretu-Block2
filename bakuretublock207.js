@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.07
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.07a
  * https://bakuretuken.com/block/
  */
 
@@ -238,17 +238,25 @@ Bomb = Class.create(Sprite,
             game.bar.frame = 1;
             game.bar.time = 3;
             this.oy = BLOCK_GAME_HEIGHT - BLOCK_BAR_MARGIN_BOTTOM - 12;
-            // バーの左側（30px以内）に当たった場合
-            if (this.ox < game.bar.x + 30) {
-                // 左側に反射させる
-                this.vx = -Math.abs(BLOCK_GAME_BALL_SPEED + 3);
-                this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+            // バーの左側（25px以内）に当たった場合
+            if (this.ox < game.bar.x + 25) {
+                if (this.vx > 0) {
+                    this.vx = Math.abs(BLOCK_GAME_BALL_SPEED + 3);
+                    this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+                } else {
+                    this.vx = -Math.abs(BLOCK_GAME_BALL_SPEED + 3);
+                    this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+                }
             }
-            // バーの右側（90px以降）に当たった場合
-            else if (this.ox > game.bar.x + 90) {
-                // 右側に反射させる
-                this.vx = Math.abs(BLOCK_GAME_BALL_SPEED + 3);
-                this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+            // バーの右側（85px以降）に当たった場合
+            else if (this.ox > game.bar.x + 85) {
+                if (this.vx > 0) {
+                    this.vx = Math.abs(BLOCK_GAME_BALL_SPEED + 3);
+                    this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+                } else {
+                    this.vx = -Math.abs(BLOCK_GAME_BALL_SPEED + 3);
+                    this.vy = -Math.abs(BLOCK_GAME_BALL_SPEED - 3);
+                }
             }
             // バーの中央（58-62px）に当たった場合
             else if (this.ox >= game.bar.x + 58 && this.ox <= game.bar.x + 62) {
@@ -521,7 +529,7 @@ function gameStart()
 {
     game.restart.y = -100; // HIDE
     // ボールに移動量
-    game.bomb.vy = BLOCK_GAME_BALL_SPEED;
+    game.bomb.vy = -BLOCK_GAME_BALL_SPEED;
     game.bomb.vx = BLOCK_GAME_BALL_SPEED;
     game.mode = 1; // GAME NOW
 };
@@ -530,7 +538,7 @@ function gameContinue()
 {
     game.restart.y = -100; // HIDE
     // ボールに移動量
-    game.bomb.vy = BLOCK_GAME_BALL_SPEED;
+    game.bomb.vy = -BLOCK_GAME_BALL_SPEED;
     game.bomb.vx = BLOCK_GAME_BALL_SPEED;
     if (game.mode === 11) {
         game.mode = 1; // GAME1 NOW
