@@ -6,25 +6,24 @@
 <meta name="viewport" content="width=device-width">
 <script src="enchant.min.js"></script>
 </head>
-<body style="margin:0px; padding: 0px; background-color: #ccc; overscroll-behavior-y: none;">
+<body style="margin:0px; padding: 0px; background-color: #ccc;">
 
 <script>
 var BLOCK_GAME_SCREEN = 2; // ゲーム数（1 or 2）
-var BLOCK_GAME_WIDTH = 480; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
+var BLOCK_GAME_WIDTH = 512; // ゲーム画面幅（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_HEIGHT = 640; // ゲーム画面高さ（ブロック幅の倍数のみ設定可能）
 var BLOCK_GAME_LIFE = 3; // ライフ数
 var BLOCK_GAME_FPS = 24; // フレームレート
 var BLOCK_GAME_BALL_SPEED = 10; // ボールの速度
-var BLOCK_BAR_MARGIN_BOTTOM = 50; // 画面下からの反射パネルの高さ
-var BLOCK_GAME_BLOCK_SIZE = 32; // ブロック幅（16 or 32）
-var BLOCK_GAME_MIN_BLOCK_PIXEL = 100; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
-var BLOCK_NEXT_STAGE_START_SCREEN = 1; // ゲーム2開始時にSTART画面表示するかどうか（0:表示しない, 1:表示する）
+var BLOCK_BAR_MARGIN_BOTTOM = 30; // 画面下からの反射パネルの高さ
+var BLOCK_GAME_BLOCK_SIZE = 32; // ブロックのサイズ（16 or 32）
+var BLOCK_GAME_MIN_BLOCK_PIXEL = 50; // ブロック化最小ピクセル数（これ以下のピクセル数はブロック化しない）
 
-var BLOCK_GAME_ANIME_IMAGE = 5; // アニメーション画像枚数（アニメ機能利用）
-var BLOCK_GAME_ANIME_POSITION_X = 125; // アニメーション画像X位置
-var BLOCK_GAME_ANIME_POSITION_Y = 36; // アニメーション画像Y位置
-var BLOCK_GAME_ANIME_FRAME = 1; // アニメーション画像切り替えフレーム数
-var BLOCK_GAME_ANIME_WAIT = 90; // アニメーション待ちフレーム数
+var BLOCK_GAME_ANIME_IMAGE = 3; // アニメーション画像数（アニメーション利用）
+var BLOCK_GAME_ANIME_POSITION_X = 202; // アニメーション画像X位置
+var BLOCK_GAME_ANIME_POSITION_Y = 110; // アニメーション画像Y位置
+var BLOCK_GAME_ANIME_FRAME = 2; // アニメーション画像切り替えフレーム数
+var BLOCK_GAME_ANIME_WAIT = 40; // アニメーション待ちフレーム数
 </script>
 
 <div style="display: grid; place-items: center; height: 100vh;">
@@ -36,7 +35,7 @@ if(userAgent.indexOf("iphone") == -1 && userAgent.indexOf("android") == -1) {
 </script>
 </div>
 
-<script src="bakuretublock207.js"></script>
+<script src="bakuretublock208.js"></script>
 
 </body>
 </html>

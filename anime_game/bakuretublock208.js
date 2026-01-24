@@ -1,5 +1,5 @@
 /**
- * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.07a
+ * 爆裂ブロック 重ね着バージョン JavaScript版 ver2.08
  * https://bakuretuken.com/block/
  */
 
@@ -47,7 +47,18 @@ if (BLOCK_GAME_HEIGHT % BLOCK_GAME_BLOCK_SIZE != 0) {
     alert("BLOCK_GAME_HEIGHT is not a multiple of BLOCK_GAME_BLOCK_SIZE");
 }
 
+const GAME_MODE = {
+    WAIT: 0, // 初期状態。ゲーム開始待ち
+    PLAY1: 1, // ゲーム1プレイ中。通常バージョンのゲーム
+    PLAY2: 2, // ゲーム2プレイ中。重ね着バージョンのゲーム
+    LOSE: 9, // 敗北。ゲームが敗北した状態
+    WIN: 10, // 勝利。ゲームが勝利した状態
+    CONTINUE1: 11, // ゲーム1再開待ち。ゲーム1でミスして再開待ちの状態
+    CONTINUE2: 12 // ゲーム2再開待ち。ゲーム2でミスして再開待ちの状態
+}
+
 enchant();
+
 var game = new Game(BLOCK_GAME_WIDTH, BLOCK_GAME_HEIGHT);
 game.preload("block_image_front1.png", "block_image_back.jpg", "block_image_win.jpg", "block_icon_menu.png", "block_icon_boll.png", "block_icon_panel.png", "block_icon_life.png");
 if (BLOCK_GAME_SCREEN == 2) {
@@ -58,7 +69,7 @@ if (BLOCK_GAME_ANIME_IMAGE > 0) {
 }
 
 game.fps = BLOCK_GAME_FPS;
-game.mode = 0; // WAIT FIRST START
+game.mode = GAME_MODE.WAIT; // WAIT FIRST START
 game.lives = BLOCK_GAME_LIFE; // 残機数
 
 var scene = new Scene();
@@ -95,7 +106,7 @@ StartLabelSprite = Class.create(Sprite,
     },
     ontouchstart:function(e)
     {
-        if (game.mode == 0) gameStart();
+        if (game.mode == GAME_MODE.WAIT) gameStart();
         if (game.mode == 9) gameRestart();
         if (game.mode == 11 || game.mode == 12) gameContinue(); // 残機がある場合の継続
     }
@@ -107,9 +118,7 @@ AnimeSprite = Class.create(Sprite,
     initialize:function()
     {
         var animeImg = game.assets["block_image_anime.jpg"];
-        animeWidth = animeImg.width;
-        animeHeight = animeImg.height;
-        Sprite.call(this, animeWidth, animeHeight / BLOCK_GAME_ANIME_IMAGE);
+        Sprite.call(this, animeImg.width, (animeImg.height / BLOCK_GAME_ANIME_IMAGE));
         this.image = animeImg;
         this.init();
     },
@@ -117,14 +126,15 @@ AnimeSprite = Class.create(Sprite,
     {
         this.frame = 0;
         this.x = BLOCK_GAME_ANIME_POSITION_X;
-        this.y = -BLOCK_GAME_HEIGHT; // 非表示
+        this.y = BLOCK_GAME_ANIME_POSITION_Y;
+        this.visible = false; // 非表示
         this.time = 0;
     },
     onenterframe:function()
     {
         // ゲーム勝利時はアニメーションを停止
-        if (game.mode == 10) {
-            this.y = -BLOCK_GAME_HEIGHT; // 非表示
+        if (game.mode == GAME_MODE.WIN) {
+            this.visible = false; // 非表示
             return;
         }
 
@@ -133,7 +143,7 @@ AnimeSprite = Class.create(Sprite,
             return;
         }
 
-        this.y = BLOCK_GAME_ANIME_POSITION_Y; // 表示
+        this.visible = true; // 表示
         for (var i = 0; i < BLOCK_GAME_ANIME_IMAGE; i++) {
             if (this.time == BLOCK_GAME_ANIME_WAIT + (i * BLOCK_GAME_ANIME_FRAME)) {
                 this.frame = i;
@@ -141,7 +151,7 @@ AnimeSprite = Class.create(Sprite,
         }
         if (this.time >= BLOCK_GAME_ANIME_WAIT + (BLOCK_GAME_ANIME_IMAGE * BLOCK_GAME_ANIME_FRAME)) {
             this.time = 0;
-            this.y = -BLOCK_GAME_HEIGHT; // 非表示
+            this.visible = false; // 非表示
         }
     }
 });
@@ -172,7 +182,7 @@ SpriteScreen = Class.create(Sprite,
         if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
         if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
 
-        if (game.mode == 0 || game.mode == 11 || game.mode == 12) {
+        if (game.mode == GAME_MODE.WAIT || game.mode == GAME_MODE.CONTINUE1 || game.mode == GAME_MODE.CONTINUE2) {
             game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10;
         }
     }
@@ -199,7 +209,7 @@ Bomb = Class.create(Sprite,
     },
     onenterframe:function()
     {
-        if (game.mode != 1 && game.mode != 2) return;
+        if (game.mode != GAME_MODE.PLAY1 && game.mode != GAME_MODE.PLAY2) return;
 
         if (this.move()) {
             this.ox = this.ox + this.vx;
@@ -291,8 +301,8 @@ Bomb = Class.create(Sprite,
                 blockBaseNum--;
                 // console.log("[BakuretuBlock] Block: "+blockBaseNum);
                 drawBackImage(posX, posY);
-                if (blockBaseNum == 0 && game.mode == 1) { gameNextStage(); return false; }
-                if (blockBaseNum == 0 && game.mode == 2) { gameWin(); return false; }
+                if (blockBaseNum == 0 && game.mode == GAME_MODE.PLAY1) { gameNextStage(); return false; }
+                if (blockBaseNum == 0 && game.mode == GAME_MODE.PLAY2) { gameWin(); return false; }
                 if (game.bomb.frame == 0) {
                     this.vx = -this.vx;
                     rtnFlag = false;
@@ -315,8 +325,8 @@ Bomb = Class.create(Sprite,
                 blockBaseNum--;
                 // console.log("[BakuretuBlock] Block: "+blockBaseNum);
                 drawBackImage(posX, posY);
-                if (blockBaseNum == 0 && game.mode == 1) { gameNextStage(); return false; }
-                if (blockBaseNum == 0 && game.mode == 2) { gameWin(); return false; }
+                if (blockBaseNum == 0 && game.mode == GAME_MODE.PLAY1) { gameNextStage(); return false; }
+                if (blockBaseNum == 0 && game.mode == GAME_MODE.PLAY2) { gameWin(); return false; }
                 if (game.bomb.frame == 0) {
                     this.vy = -this.vy;
                     rtnFlag = false;
@@ -411,23 +421,22 @@ window.onload = function()
     // PCの反射板移動
     document.getElementById("enchant-stage").addEventListener("mousemove", function(e)
     {
-        var debug = e.pageX - this.getBoundingClientRect().left - (game.bar.width / 2);
         game.bar.x = e.pageX - this.getBoundingClientRect().left - (game.bar.width / 2);
 
         // 反射板の移動範囲を制限
         if (game.bar.x < -game.bar.width/2) game.bar.x = -game.bar.width/2;
         if (game.bar.x > BLOCK_GAME_WIDTH - game.bar.width/2) game.bar.x = BLOCK_GAME_WIDTH - game.bar.width/2;
 
-        if (game.mode == 0 || game.mode == 11 || game.mode == 12) {
+        if (game.mode == GAME_MODE.WAIT || game.mode == GAME_MODE.CONTINUE1 || game.mode == GAME_MODE.CONTINUE2) {
             game.bomb.ox = game.bar.x +  (120 / 2); game.bomb.x = game.bomb.ox -10;
         }
     }, false);
     document.getElementById("enchant-stage").addEventListener("click", function(e)
     {
         if (e.pageY < 150) return;
-        if (game.mode == 0) gameStart();
-        if (game.mode == 9) gameRestart();
-        if (game.mode == 11 || game.mode == 12) gameContinue(); // 残機がある場合の継続
+        if (game.mode == GAME_MODE.WAIT) gameStart();
+        if (game.mode == GAME_MODE.LOSE) gameRestart();
+        if (game.mode == GAME_MODE.CONTINUE1 || game.mode == GAME_MODE.CONTINUE2) gameContinue(); // 残機がある場合の継続
     }, false);
 
     initGame(imgFront1);
@@ -460,8 +469,8 @@ function initGame(targetImage)
         for (var x = 0; x < BLOCK_GAME_WIDTH / BLOCK_GAME_BLOCK_SIZE; x++) {
             blockBase[x][y] = 0;
             blockBaseMaster[x][y] = 0;
-            if (haveBlock(sf.context, x, y)) {
-                var blockFlag = haveBlock(sf.context, x, y);
+            var blockFlag = haveBlock(sf.context, x, y);
+            if (blockFlag > 0) {
                 blockBase[x][y] = blockFlag;
                 blockBaseMaster[x][y] = blockFlag;
                 if (blockFlag == 1) {
@@ -484,6 +493,12 @@ function initGame(targetImage)
     sf._dirty = true;
     game.spriteScreen.image = null;
     game.spriteScreen.image = sf;
+
+    // オブジェクト表示
+    game.restart.visible = true;
+    game.bomb.visible = true;
+    game.bar.visible = true;
+    game.lifeDisplay.visible = true;
 };
 
 function haveBlock(ctx, x, y)
@@ -508,13 +523,13 @@ function drawBackImage(x, y)
     var blockX = x * BLOCK_GAME_BLOCK_SIZE;
     var blockY = y * BLOCK_GAME_BLOCK_SIZE;
 
-    // まず該当領域をクリア
+    // 該当領域をクリア
     ctx.clearRect(blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
 
     // 背景画像を描画
     ctx.drawImage(imgBack, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
 
-    if (game.mode == 1 && imgFront2 != null) {
+    if (game.mode == GAME_MODE.PLAY1 && imgFront2 != null) {
         // imgFront2を描画
         ctx.drawImage(imgFront2, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE, blockX, blockY, BLOCK_GAME_BLOCK_SIZE, BLOCK_GAME_BLOCK_SIZE);
     }
@@ -527,24 +542,24 @@ function drawBackImage(x, y)
 
 function gameStart()
 {
-    game.restart.y = -100; // HIDE
+    game.restart.visible = false;
     // ボールに移動量
     game.bomb.vy = -BLOCK_GAME_BALL_SPEED;
     game.bomb.vx = BLOCK_GAME_BALL_SPEED;
-    game.mode = 1; // GAME NOW
+    game.mode = GAME_MODE.PLAY1; // GAME NOW
 };
 
 function gameContinue()
 {
-    game.restart.y = -100; // HIDE
+    game.restart.visible = false;
     // ボールに移動量
     game.bomb.vy = -BLOCK_GAME_BALL_SPEED;
     game.bomb.vx = BLOCK_GAME_BALL_SPEED;
-    if (game.mode === 11) {
-        game.mode = 1; // GAME1 NOW
+    if (game.mode === GAME_MODE.CONTINUE1) {
+        game.mode = GAME_MODE.PLAY1; // GAME1 NOW
     }
-    if (game.mode === 12) {
-        game.mode = 2; // GAME2 NOW
+    if (game.mode === GAME_MODE.CONTINUE2) {
+        game.mode = GAME_MODE.PLAY2; // GAME2 NOW
     }
 };
 
@@ -565,54 +580,46 @@ function loseLife()
         game.bomb.x = game.bomb.ox -10;
         game.bomb.oy = BLOCK_GAME_HEIGHT - BLOCK_BAR_MARGIN_BOTTOM - 20;
         game.bomb.y = game.bomb.oy - 10;
-        game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
-        game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
+        game.restart.visible = true; // 表示
         game.restart.frame = 2; // 3フレーム目の「START」画像
-        if (game.mode === 1) {
-            game.mode = 11; // GAME1 CONTINUE（継続待ち）
+        if (game.mode === GAME_MODE.PLAY1) {
+            game.mode = GAME_MODE.CONTINUE1; // GAME1 CONTINUE（継続待ち）
         }
-        if (game.mode === 2) {
-            game.mode = 12; // GAME2 CONTINUE（継続待ち）
+        if (game.mode === GAME_MODE.PLAY2) {
+            game.mode = GAME_MODE.CONTINUE2; // GAME2 CONTINUE（継続待ち）
         }
     }
 };
 
 function gameLose()
 {
-    game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
-    game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2) - 50;
-    // game.restart.x = 0;
-    // game.restart.y = 0;
+    game.restart.visible = true;
     game.restart.frame = 1;
 
     // ボールに非表示＆移動量なし
     game.bomb.vy = 0;
     game.bomb.vx = 0;
-    game.bomb.oy = -100;
-    game.bomb.y = -100;
+    game.bomb.visible = false;
 
-    game.mode = 9; // GAME LOSE
+    game.mode = GAME_MODE.LOSE; // GAME LOSE
 };
 
 function gameWin()
 {
-    game.mode = 10; // GAME WIN
+    game.mode = GAME_MODE.WIN; // GAME WIN
 
     // ボールに非表示＆移動量なし
     game.bomb.vy = 0;
     game.bomb.vx = 0;
-    game.bomb.oy = -100;
-    game.bomb.y = -100;
+    game.bomb.visible = false;
     // アニメ非表示
     if (BLOCK_GAME_ANIME_IMAGE > 0) {
-        game.anime.y = -BLOCK_GAME_HEIGHT;
+        game.anime.visible = false;
     }
-
     // パネル非表示
-    game.bar.y = -100;
-
+    game.bar.visible = false;
     // 残機ハートマーク非表示
-    game.lifeDisplay.y = -100;
+    game.lifeDisplay.visible = false;
 
     sf.context.drawImage(imgWin, 0, 0);
 };
@@ -628,12 +635,11 @@ function gameNextStage()
             game.bomb.ox = game.bar.x + (120 / 2);
             game.bomb.x = game.bomb.ox -10;
             // 「START」表示
-            game.restart.x = (BLOCK_GAME_WIDTH/2) - (game.restart.width/2);
-            game.restart.y = (BLOCK_GAME_HEIGHT/2) - (game.restart.height/2);
+            game.restart.visible = true;
             game.restart.frame = 2; // 「START」画像
-            game.mode = 12; // GAME NEXT STAGE WAIT
+            game.mode = GAME_MODE.CONTINUE2; // GAME NEXT STAGE WAIT
         } else {
-            game.mode = 2; // GAME NEXT STAGE
+            game.mode = GAME_MODE.PLAY2; // GAME NEXT STAGE
         }
     } else {
         gameWin(); // 次ステージなし(GAME WIN)
@@ -651,5 +657,5 @@ function gameRestart()
     game.lifeDisplay.updateDisplay();
 
     // gameStart();
-    game.mode = 0; // GAME START WAIT
+    game.mode = GAME_MODE.WAIT; // GAME START WAIT
 };
