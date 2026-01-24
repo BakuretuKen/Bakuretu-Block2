@@ -639,6 +639,7 @@ function gameNextStage()
             game.restart.frame = 2; // 「START」画像
             game.mode = GAME_MODE.CONTINUE2; // GAME NEXT STAGE WAIT
         } else {
+            game.restart.visible = false;
             game.mode = GAME_MODE.PLAY2; // GAME NEXT STAGE
         }
     } else {
